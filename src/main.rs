@@ -34,19 +34,22 @@ impl State {
     fn new() -> Self {
         let mut rng = RandomNumberGenerator::new();
         let map_builder = MapBuilder::new(&mut rng);
+        let mut ecs = World::default();
+        let mut resources = Resources::default();
 
-            let mut ecs = World::default();
-            let mut resources = Resources::default();
-            let mut rng = RandomNumberGenerator::new();
-            let map_builder = MapBuilder::new(&mut rng);
-            spawn_player(&mut ecs, map_builder.player_start);
-            resources.insert(map_builder.map);
-            resources.insert(Camera::new(map_builder.player_start));
-            Self {
-                ecs,
-                resources,
-                systems: build_scheduler(),
-            }
+        spawn_player(&mut ecs, map_builder.player_start);
+        map_builder.rooms
+            .iter()
+            .skip(1) // room 0 is where the player spawns
+            .map(|r| r.center())
+            .for_each(|pos| spawn_monster(&mut ecs, &mut rng, pos)); // add monster to each room but the one the player spawns in
+        resources.insert(map_builder.map);
+        resources.insert(Camera::new(map_builder.player_start));
+        Self {
+            ecs,
+            resources,
+            systems: build_scheduler(),
+        }
     }
 }
 
