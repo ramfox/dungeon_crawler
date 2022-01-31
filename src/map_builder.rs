@@ -72,9 +72,6 @@ impl MapBuilder {
     fn build_corridors(&mut self, rng: &mut RandomNumberGenerator) {
         let mut rooms = self.rooms.clone();
         rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
-        for (i, room) in rooms.iter().enumerate() {
-            println!("room {}: {:?} ", i, room.center());
-        }
 
         for (i, room) in rooms.iter().enumerate().skip(1) {
             let prev = rooms[i - 1].center();
